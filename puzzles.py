@@ -116,13 +116,13 @@ def main():
 
     for name, (fn, writer_fn) in registered_tasks_noinput.items():
         if args[name]:
-            print(f"Processing '{name}':")
+            print(f"Processing '{name}'...")
             result = fn(all_words_by_class)
             writer_fn(result_dir, name, result)
 
     for name, (fn, _) in registered_stenography_input.items():
         if args[name]:
-            print(name)
+            print(f"Processing '{name}'...")
             stenography_args = args[name].split(",")
             result = fn(all_words_by_class, *stenography_args)
             print(result)

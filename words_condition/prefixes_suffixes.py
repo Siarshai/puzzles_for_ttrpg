@@ -2,6 +2,8 @@ from typing import List, Dict
 from dataclasses import dataclass
 from itertools import chain
 
+from tqdm import tqdm
+
 
 @dataclass
 class PrefixRecord:
@@ -36,7 +38,7 @@ def find_words_with_common_prefix(
     words_with_common_prefix = []
     prefix = ""
     current_streak = []
-    for word in eligible_words:
+    for word in tqdm(eligible_words, total=len(eligible_words)):
         if prefix == word[0:prefix_size]:
             current_streak.append(word)
         else:
@@ -75,7 +77,7 @@ def find_words_with_common_word_prefix(
     words_with_common_prefix = []
     is_streak_started = False
     current_streak = []
-    for word in eligible_words:
+    for word in tqdm(eligible_words, total=len(eligible_words)):
         if is_streak_started:
             if word[0:prefix_size] == current_streak[0]:
                 current_streak.append(word)
