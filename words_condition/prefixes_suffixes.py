@@ -74,10 +74,9 @@ def find_words_with_common_suffix(
     Using only nouns because verbs and adjectives add too manygarbage
     """
     # Not the most effient way, but no need to optimize right now
-    eligible_words = [word[::-1] for word in all_words_by_class["nouns"]
-                      if len(word) >= suffix_size]
-    eligible_words = sorted(eligible_words)
-    eligible_words = [word[::-1] for word in eligible_words]
+    eligible_words = sorted([word for word in
+                             all_words_by_class["nouns"] if len(word) >= suffix_size],
+                            key=lambda word: word[::-1])
     return find_words_with_common_part(
         eligible_words, lambda word: word[-suffix_size:], cluster_size_threshold)
 
@@ -153,18 +152,13 @@ def find_words_with_common_word_suffix(
     ...
     Using only nouns because verbs add too many garbage
     """
-    nouns = all_words_by_class["nouns"]
-
-    eligible_words = sorted([word[::-1] for word in
+    eligible_words = sorted([word for word in
                              chain.from_iterable(all_words_by_class.values())
-                             if len(word) >= suffix_size])
-    eligible_words = sorted(eligible_words)
-    eligible_words = [word[::-1] for word in eligible_words]
-
-    eligible_starting_words = sorted([word[::-1] for word in nouns if len(word) == suffix_size])
-    eligible_starting_words = sorted(eligible_starting_words)
-    eligible_starting_words = [word[::-1] for word in eligible_starting_words]
-
+                             if len(word) >= suffix_size],
+                            key=lambda word: word[::-1])
+    eligible_starting_words = sorted([word for word in
+                                      all_words_by_class["nouns"] if len(word) == suffix_size],
+                                     key=lambda word: word[::-1])
     return find_words_with_common_word_part(
         eligible_words,
         eligible_starting_words,
