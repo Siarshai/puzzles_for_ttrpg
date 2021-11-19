@@ -1,9 +1,8 @@
 from pathlib import Path
-from utils.preprocessing import get_filepaths_to_cached_words
 
 
-def load_words(cache_dir: Path):
-    captions, filepaths = get_filepaths_to_cached_words(cache_dir)
+def load_words(cache_dir: Path, get_filepaths_and_captions):
+    captions, filepaths = get_filepaths_and_captions(cache_dir)
     result = {}
     for name, fp in zip(captions, filepaths):
         with open(fp, "r") as fh:

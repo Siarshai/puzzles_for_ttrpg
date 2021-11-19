@@ -14,7 +14,8 @@ from utils.output_formatting import write_ioi, write_doi, write_i
 from words_condition.prefixes_suffixes import find_words_with_common_word_prefix, find_words_with_common_prefix, \
     find_words_with_common_suffix, find_words_with_common_word_suffix
 from utils.load_words import load_words
-from utils.preprocessing import download_freq2011, is_cache_ready, preprocess_freq2011
+from utils.preprocessing import download_freq2011, is_cache_ready, preprocess_freq2011, download_crrugent_subtlex_us, \
+    preprocess_crrugent_subtlex_us, get_filepaths_to_cached_words, get_filepaths_to_cached_words_english
 from words_condition.sandwichable_words import find_double_sandwichable_words, find_sandwichable_words_multistuffing
 from words_condition.spinning_words import find_spinning_words
 from words_condition.word_chains import find_word_chains
@@ -110,12 +111,15 @@ def main():
         print("Words cache is not ready, rebuilding...")
         download_freq2011(cache_dir)
         preprocess_freq2011(cache_dir, args["cache_count"])
+        download_crrugent_subtlex_us(cache_dir)
+        preprocess_crrugent_subtlex_us(cache_dir)
 
     if args["all_noinput"]:
         for name in registered_tasks_noinput.keys():
             args[name] = True
 
-    all_words_by_class = load_words(cache_dir)
+    all_words_by_class = load_words(cache_dir, get_filepaths_to_cached_words)
+    all_words_by_class_english = load_words(cache_dir, get_filepaths_to_cached_words_english)
 
     for name, (fn, writer_fn) in registered_tasks_noinput.items():
         if args[name]:
