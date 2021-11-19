@@ -12,4 +12,4 @@ def sample_words(all_words_by_class: Dict[str, List[str]], count=200):
     """
     result = list(chain(*all_words_by_class.values()))
     shuffle(result)
-    return result[count:]
+    return result[:count]
