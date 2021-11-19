@@ -11,7 +11,8 @@ from stenography.in_between_words import hide_in_between_words
 from stenography.letters_before_sequence import hide_letters_before_sequence
 from stenography.nth_letter import hide_in_nth_letters
 from utils.output_formatting import write_ioi, write_doi, write_i
-from words_condition.prefixes_suffixes import find_words_with_common_word_prefix, find_words_with_common_prefix
+from words_condition.prefixes_suffixes import find_words_with_common_word_prefix, find_words_with_common_prefix, \
+    find_words_with_common_suffix
 from utils.load_words import load_words
 from utils.preprocessing import download_freq2011, is_cache_ready, preprocess_freq2011
 from words_condition.sandwichable_words import find_double_sandwichable_words, find_sandwichable_words_multistuffing
@@ -23,6 +24,7 @@ from words_condition.word_squares import find_magic_word_squares
 registered_tasks_noinput = {
     "common_word_prefix": (find_words_with_common_word_prefix, write_ioi),
     "common_prefix": (find_words_with_common_prefix, write_ioi),
+    "common_suffix": (find_words_with_common_suffix, write_ioi),
     "double_sandwichable": (find_double_sandwichable_words, write_doi),
     "sandwichable_multistuffing": (find_sandwichable_words_multistuffing, write_doi),
     "spinning": (find_spinning_words, write_ioi),
