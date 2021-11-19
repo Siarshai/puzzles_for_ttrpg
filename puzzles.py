@@ -2,6 +2,7 @@
 
 import argparse
 import os
+from enum import Enum
 from pathlib import Path
 
 from anagrams.find_anagrams import find_anagrams
@@ -16,24 +17,31 @@ from words_condition.prefixes_suffixes import find_words_with_common_word_prefix
 from utils.load_words import load_words
 from utils.preprocessing import download_freq2011, is_cache_ready, preprocess_freq2011, download_crrugent_subtlex_us, \
     preprocess_crrugent_subtlex_us, get_filepaths_to_cached_words, get_filepaths_to_cached_words_english
+from words_condition.roman_numerals import find_roman_numeral_removable
 from words_condition.sandwichable_words import find_double_sandwichable_words, find_sandwichable_words_multistuffing
 from words_condition.spinning_words import find_spinning_words
 from words_condition.word_chains import find_word_chains
 from words_condition.word_squares import find_magic_word_squares
 
 
-registered_tasks_noinput = {
-    "common_word_prefix": (find_words_with_common_word_prefix, write_ioi),
-    "common_prefix": (find_words_with_common_prefix, write_ioi),
-    "common_word_suffix": (find_words_with_common_word_suffix, write_ioi),
-    "common_suffix": (find_words_with_common_suffix, write_ioi),
-    "double_sandwichable": (find_double_sandwichable_words, write_doi),
-    "sandwichable_multistuffing": (find_sandwichable_words_multistuffing, write_doi),
-    "spinning": (find_spinning_words, write_ioi),
-    "chains": (find_word_chains, write_ioi),
-    "squares": (find_magic_word_squares, write_ioi),
+class Language(Enum):
+    RUSSIAN = 1,
+    ENGLISH = 2
 
-    "phone_locks": (find_most_complicated_phone_locks, write_i)
+
+registered_tasks_noinput = {
+    "common_word_prefix": (find_words_with_common_word_prefix, write_ioi, Language.RUSSIAN),
+    "common_prefix": (find_words_with_common_prefix, write_ioi, Language.RUSSIAN),
+    "common_word_suffix": (find_words_with_common_word_suffix, write_ioi, Language.RUSSIAN),
+    "common_suffix": (find_words_with_common_suffix, write_ioi, Language.RUSSIAN),
+    "double_sandwichable": (find_double_sandwichable_words, write_doi, Language.RUSSIAN),
+    "sandwichable_multistuffing": (find_sandwichable_words_multistuffing, write_doi, Language.RUSSIAN),
+    "spinning": (find_spinning_words, write_ioi, Language.RUSSIAN),
+    "chains": (find_word_chains, write_ioi, Language.RUSSIAN),
+    "squares": (find_magic_word_squares, write_ioi, Language.RUSSIAN),
+    "roman_removable": (find_roman_numeral_removable, write_ioi, Language.ENGLISH),
+
+    "phone_locks": (find_most_complicated_phone_locks, write_i, Language.RUSSIAN)
 }
 
 registered_stenography_input = {
@@ -72,7 +80,7 @@ def parse_args():
     group = parser.add_argument_group(
         "Noinput"
         "Search words or patterns abiding certain rule")
-    for key, (fn, _) in registered_tasks_noinput.items():
+    for key, (fn, _, _) in registered_tasks_noinput.items():
         group.add_argument(f"--{key}", help=fn.__doc__, action="store_true", default=False)
     group.add_argument(
         "--all_noinput",
@@ -121,10 +129,10 @@ def main():
     all_words_by_class = load_words(cache_dir, get_filepaths_to_cached_words)
     all_words_by_class_english = load_words(cache_dir, get_filepaths_to_cached_words_english)
 
-    for name, (fn, writer_fn) in registered_tasks_noinput.items():
+    for name, (fn, writer_fn, lang) in registered_tasks_noinput.items():
         if args[name]:
             print(f"Processing '{name}'...")
-            result = fn(all_words_by_class)
+            result = fn(all_words_by_class if lang == Language.RUSSIAN else all_words_by_class_english)
             writer_fn(result_dir, name, result)
 
     for name, (fn, _) in registered_stenography_input.items():
