@@ -7,6 +7,7 @@ from pathlib import Path
 
 from anagrams.find_anagrams import find_anagrams
 from ideation.random_sampling import sample_words
+from mathy.strange_math import lettery_math_table
 from patterns.most_complicated_phone_locks import find_most_complicated_phone_locks
 from stenography.in_between_words import hide_in_between_words
 from stenography.letters_before_sequence import hide_letters_before_sequence
@@ -25,6 +26,7 @@ from words_condition.word_squares import find_magic_word_squares
 
 
 class Language(Enum):
+    NONE = 0,
     RUSSIAN = 1,
     ENGLISH = 2
 
@@ -41,7 +43,9 @@ registered_tasks_noinput = {
     "squares": (find_magic_word_squares, write_ioi, Language.RUSSIAN),
     "roman_removable": (find_roman_numeral_removable, write_ioi, Language.ENGLISH),
 
-    "phone_locks": (find_most_complicated_phone_locks, write_i, Language.RUSSIAN)
+    "phone_locks": (find_most_complicated_phone_locks, write_i, Language.NONE),
+
+    "lettery_math": (lettery_math_table, write_i, Language.NONE)
 }
 
 registered_stenography_input = {
@@ -132,7 +136,12 @@ def main():
     for name, (fn, writer_fn, lang) in registered_tasks_noinput.items():
         if args[name]:
             print(f"Processing '{name}'...")
-            result = fn(all_words_by_class if lang == Language.RUSSIAN else all_words_by_class_english)
+            if lang == Language.RUSSIAN:
+                result = fn(all_words_by_class)
+            elif lang == Language.ENGLISH:
+                result = fn(all_words_by_class_english)
+            else:
+                result = fn()
             writer_fn(result_dir, name, result)
 
     for name, (fn, _) in registered_stenography_input.items():
