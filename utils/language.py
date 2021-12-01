@@ -9,6 +9,12 @@ class UnknownLanguage(ValueError):
                          f"known languages are: " + ", ".join([elem.value for elem in Language]))
 
 
+class UnsupportedLanguageForAlgorithm(ValueError):
+    def __init__(self, algorithm: str, lang, supported_langs):
+        super().__init__(f"{lang.value!r} language is not supported for algorithm {algorithm!r}; " +
+                         f"supported languages: " + ", ".join([l.value for l in supported_langs]))
+
+
 @unique
 class Language(str, Enum):
     NONE = "none",

@@ -1,23 +1,17 @@
 #!/usr/bin/env python3
 
-import argparse
-import os
-from collections import Iterable
-from enum import Enum
-from pathlib import Path
-
 from anagrams.find_anagrams import find_anagrams
 from ideation.random_sampling import sample_words
 from mathy.strange_math import lettery_math_table
 from patterns.most_complicated_phone_locks import find_most_complicated_phone_locks
+from common_args_parse import prepare_argsparse, prepare_result_dir, prepare_data
 from stenography.in_between_words import hide_in_between_words
 from stenography.letters_before_sequence import hide_letters_before_sequence
 from stenography.nth_letter import hide_in_nth_letters
 from utils.output_formatting import write_ioi, write_doi, write_i
 from words_condition.prefixes_suffixes import find_words_with_common_word_prefix, find_words_with_common_prefix, \
     find_words_with_common_suffix, find_words_with_common_word_suffix
-from utils.words_cache import is_cache_ready, build_cache, load_caches
-from utils.language import Language
+from utils.language import Language, UnsupportedLanguageForAlgorithm
 from words_condition.roman_numerals import find_roman_numeral_removable
 from words_condition.sandwichable_words import find_double_sandwichable_words, find_sandwichable_words_multistuffing
 from words_condition.spinning_words import find_spinning_words
@@ -49,37 +43,8 @@ registered_stenography_input = {
 }
 
 
-class UnsupportedLanguageForAlgorithm(ValueError):
-    def __init__(self, algorithm: str, lang, supported_langs):
-        super().__init__(f"{lang.value!r} language is not supported for algorithm {algorithm!r}; " + f"supported languages: " + ", ".join([l.value for l in supported_langs]))
-
-
 def parse_args():
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-
-    group = parser.add_argument_group("Main parameters")
-    group.add_argument(
-        "--cache_dir",
-        metavar="PATH",
-        help="""Expecting to find nouns.txt, verbs.txt, adjectives.txt in this directory. 
-             If not specified, will create 'cache' directory in current directory,
-             then download and preprocess vocabulary here. 
-             .txt are not rewritten after that, you can manipulate cache as you see fit.""",
-        default=Path(os.getcwd()).joinpath("cache"))
-    group.add_argument(
-        "--cache_count",
-        metavar="COUNT",
-        type=int,
-        help="""When rebuilding cache use this amount of most popular words""",
-        default=100000)
-    group.add_argument(
-        "--result_dir",
-        metavar="PATH",
-        help="""Will write output to .txt files located in designated dir.
-             If not specified, will create 'results' directory in current directory 
-             and will use that""",
-        default=Path(os.getcwd()).joinpath("results"))
-
+    parser = prepare_argsparse()
     group = parser.add_argument_group(
         "Noinput"
         "Search words or patterns abiding certain rule")
@@ -119,25 +84,13 @@ def parse_args():
 
 def main():
     args = vars(parse_args())
-    cache_dir = Path(args["cache_dir"])
-    result_dir = Path(args["result_dir"])
+    result_dir = prepare_result_dir(args)
+    all_words = prepare_data(args)
 
-    for d, name in zip([cache_dir, result_dir], ["cache_dir", "result_dir"]):
-        if not d.is_dir():
-            raise OSError(f"{name} is not a directory")
-        if not d.exists():
-            d.mkdir(parents=True)
-
-    if not is_cache_ready(cache_dir):
-        print("Words cache is not ready, rebuilding...")
-        build_cache(cache_dir, args["cache_count"])
-
+    selected_language = Language.from_str(args["language"])
     if args["all_noinput"]:
         for algo_name in registered_tasks_noinput.keys():
             args[algo_name] = True
-
-    selected_language = Language.from_str(args["language"])
-    all_words = load_caches(cache_dir)
 
     for algo_name, (fn, writer_fn, supported_languages) in registered_tasks_noinput.items():
         def process_algo_for_language(lang):
