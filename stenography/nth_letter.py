@@ -1,7 +1,6 @@
 from collections import Counter, defaultdict
 from random import shuffle
 
-from utils.load_words import load_words
 from typing import List, Dict
 
 from utils.word_validation import is_cyrillic

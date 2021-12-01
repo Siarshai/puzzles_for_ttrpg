@@ -15,20 +15,13 @@ from stenography.nth_letter import hide_in_nth_letters
 from utils.output_formatting import write_ioi, write_doi, write_i
 from words_condition.prefixes_suffixes import find_words_with_common_word_prefix, find_words_with_common_prefix, \
     find_words_with_common_suffix, find_words_with_common_word_suffix
-from utils.load_words import load_words
-from utils.preprocessing import download_freq2011, is_cache_ready, preprocess_freq2011, download_crrugent_subtlex_us, \
-    preprocess_crrugent_subtlex_us, get_filepaths_to_cached_words, get_filepaths_to_cached_words_english
+from utils.words_cache import is_cache_ready, build_cache, load_caches
+from utils.language import Language
 from words_condition.roman_numerals import find_roman_numeral_removable
 from words_condition.sandwichable_words import find_double_sandwichable_words, find_sandwichable_words_multistuffing
 from words_condition.spinning_words import find_spinning_words
 from words_condition.word_chains import find_word_chains
 from words_condition.word_squares import find_magic_word_squares
-
-
-class Language(Enum):
-    NONE = 0,
-    RUSSIAN = 1,
-    ENGLISH = 2
 
 
 registered_tasks_noinput = {
@@ -121,25 +114,21 @@ def main():
 
     if not is_cache_ready(cache_dir):
         print("Words cache is not ready, rebuilding...")
-        download_freq2011(cache_dir)
-        preprocess_freq2011(cache_dir, args["cache_count"])
-        download_crrugent_subtlex_us(cache_dir)
-        preprocess_crrugent_subtlex_us(cache_dir)
+        build_cache(cache_dir, args["cache_count"])
 
     if args["all_noinput"]:
         for name in registered_tasks_noinput.keys():
             args[name] = True
 
-    all_words_by_class = load_words(cache_dir, get_filepaths_to_cached_words)
-    all_words_by_class_english = load_words(cache_dir, get_filepaths_to_cached_words_english)
+    all_words = load_caches(cache_dir)
 
     for name, (fn, writer_fn, lang) in registered_tasks_noinput.items():
         if args[name]:
             print(f"Processing '{name}'...")
             if lang == Language.RUSSIAN:
-                result = fn(all_words_by_class)
+                result = fn(all_words[Language.RUSSIAN])
             elif lang == Language.ENGLISH:
-                result = fn(all_words_by_class_english)
+                result = fn(all_words[Language.ENGLISH])
             else:
                 result = fn()
             writer_fn(result_dir, name, result)
@@ -148,14 +137,14 @@ def main():
         if args[name]:
             print(f"Processing '{name}'...")
             stenography_args = args[name].split(",")
-            result = fn(all_words_by_class, *stenography_args)
+            result = fn(all_words[Language.RUSSIAN], *stenography_args)
             print(result)
 
     if args["anagrams"]:
-        result = find_anagrams(all_words_by_class, args["anagrams"])
+        result = find_anagrams(all_words[Language.RUSSIAN], args["anagrams"])
         print(result)
     if args["sample"]:
-        result = sample_words(all_words_by_class, args["sample"])
+        result = sample_words(all_words[Language.RUSSIAN], args["sample"])
         for word in result:
             print(word)
 
