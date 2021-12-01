@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 
 from anagrams.find_anagrams import find_anagrams
-from ideation.random_sampling import sample_words
 from mathy.strange_math import lettery_math_table
 from patterns.most_complicated_phone_locks import find_most_complicated_phone_locks
 from common_args_parse import prepare_argsparse, prepare_result_dir, prepare_data
-from stenography.in_between_words import hide_in_between_words
-from stenography.letters_before_sequence import hide_letters_before_sequence
-from stenography.nth_letter import hide_in_nth_letters
 from utils.output_formatting import write_ioi, write_doi, write_i
 from words_condition.prefixes_suffixes import find_words_with_common_word_prefix, find_words_with_common_prefix, \
     find_words_with_common_suffix, find_words_with_common_word_suffix
@@ -36,12 +32,6 @@ registered_tasks_noinput = {
     "lettery_math": (lettery_math_table, write_i, (Language.NONE,))
 }
 
-registered_stenography_input = {
-    "letters_before_sequence": (hide_letters_before_sequence, "SECRET_WORD,MARKING_SEQUENCE"),
-    "nth_letter": (hide_in_nth_letters, "SECRET_WORD,N"),
-    "between_words": (hide_in_between_words, "SECRET_WORD,MAXCOUNT")
-}
-
 
 def parse_args():
     parser = prepare_argsparse()
@@ -67,18 +57,6 @@ def parse_args():
         Equivalent to: 
         '{" ".join([f"--{key}" for key in registered_tasks_noinput.keys()])}'""",
         action="store_true", default=False)
-
-    group = parser.add_argument_group(
-        "Stenography",
-        "Hides secret word inside of innocuous message.")
-    for key, (fn, metavar_hint) in registered_stenography_input.items():
-        group.add_argument(f"--{key}", help=fn.__doc__, metavar=metavar_hint, default="")
-
-    group = parser.add_argument_group("Other")
-    group.add_argument(
-        "--anagrams", help=find_anagrams.__doc__, metavar="WORD", default="")
-    group.add_argument(
-        "--sample", help=sample_words.__doc__, metavar="N", type=int, default=0)
     return parser.parse_args()
 
 
@@ -106,21 +84,6 @@ def main():
                 if selected_language not in supported_languages:
                     raise UnsupportedLanguageForAlgorithm(algo_name, selected_language, supported_languages)
                 process_algo_for_language(selected_language)
-
-    for algo_name, (fn, _) in registered_stenography_input.items():
-        if args[algo_name]:
-            print(f"Processing '{algo_name}'...")
-            stenography_args = args[algo_name].split(",")
-            result = fn(all_words[Language.RUSSIAN], *stenography_args)
-            print(result)
-
-    if args["anagrams"]:
-        result = find_anagrams(all_words[Language.RUSSIAN], args["anagrams"])
-        print(result)
-    if args["sample"]:
-        result = sample_words(all_words[Language.RUSSIAN], args["sample"])
-        for word in result:
-            print(word)
 
 
 if __name__ == "__main__":
