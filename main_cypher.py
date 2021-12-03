@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from common_args_parse import prepare_argsparse, prepare_result_dir, prepare_data
+from stenography.hide_image_in_words import hide_image
 from stenography.in_between_words import hide_in_between_words
 from stenography.letters_before_sequence import hide_letters_before_sequence
 from stenography.nth_letter import hide_in_nth_letters
@@ -14,7 +15,8 @@ from utils.language import Language
 registered_stenography_input = {
     "letters_before_sequence": (hide_letters_before_sequence, "SECRET_WORD,MARKING_SEQUENCE"),
     "nth_letter": (hide_in_nth_letters, "SECRET_WORD,N"),
-    "between_words": (hide_in_between_words, "SECRET_WORD,MAXCOUNT")
+    "between_words": (hide_in_between_words, "SECRET_WORD,MAXCOUNT"),
+    "hide_image": (hide_image, "IMAGE_LINE;IMAGE_LINE;IMAGE_LINE,...")
 }
 
 

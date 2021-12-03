@@ -9,3 +9,7 @@ def is_cyrillic(letter):
 def validate_word(word):
     if not any([is_cyrillic(l) for l in word]):
         raise RuntimeError("Found non cyrillic symbol or space or hyphen")
+
+
+def is_russian_vowel(char: str):
+    return char in "аяуюоёеэиыАЯУЮОЁЕЭИЫ"
