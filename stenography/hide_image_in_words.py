@@ -4,10 +4,12 @@ from typing import List, Dict
 from utils.word_validation import is_russian_vowel
 
 
-def validate_image(image: List[str]):
-    for line in image:
+def validate_image(image_lines: List[str]):
+    for line in image_lines:
         if not all("B" == c or "W" == c for c in line):
             raise ValueError("Image should contain only B and W characters")
+    if not all(len(line) == len(image_lines[0]) for line in image_lines[1:]):
+        raise ValueError("Lines in image should be of equal length")
 
 
 def vowels_as_b_consonant_as_w(word: str) -> str:
@@ -50,7 +52,7 @@ def hide_image(all_words_by_class: Dict[str, List[str]], image_strrepr: str) -> 
     """
     image_lines = image_strrepr.split(";")
     validate_image(image_lines)
-    nouns = all_words_by_class["nouns"]
+    nouns = [word for word in all_words_by_class["nouns"] if len(word) == len(image_lines[0])]
     coding_words = {word: vowels_as_b_consonant_as_w(word) for word in nouns}
     image_coding_variants = {}
     for line in image_lines:
