@@ -75,3 +75,35 @@ def lettery_math_table() -> List[str]:
     result.append("EN")
     result.extend(lettery_math_table_en())
     return result
+
+
+def roman_dashes_math_table() -> List[str]:
+    numbers = [
+        (1, 1),  # I
+        (2, 2),  # II
+        (3, 3),  # III
+        (4, 3),  # IV
+        (5, 2),  # V
+        (6, 3),  # VI
+        (7, 4),  # VII
+        (8, 5),  # VIII
+        (9, 3),  # XI
+        (10, 2),  # X
+        (11, 3),  # XI
+        (12, 4),  # XII
+        (50, 2),  # L
+        (1000, 4),  # M
+    ]
+    # should there be add/subtract instead?
+    operations = [
+        ("+", 2),
+        ("-", 1),
+        ("x", 2),
+    ]
+    result = []
+    for opsign, opdashes in operations:
+        for (x, xdashes), (y, ystrrepr) in product(numbers, numbers):
+            dashes_result = xdashes + opdashes + ystrrepr
+            line = str(x) + " " + opsign + " " + str(y) + " = " + str(dashes_result)
+            result.append(line)
+    return result

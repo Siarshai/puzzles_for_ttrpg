@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from anagrams.find_anagrams import find_anagrams
-from mathy.strange_math import lettery_math_table
+from mathy.strange_math import lettery_math_table, roman_dashes_math_table
 from patterns.most_complicated_phone_locks import find_most_complicated_phone_locks
 from common_args_parse import prepare_argsparse, prepare_result_dir, prepare_data
 from utils.output_formatting import write_ioi, write_doi, write_i
@@ -29,7 +29,8 @@ registered_tasks_noinput = {
 
     "phone_locks": (find_most_complicated_phone_locks, write_i, (Language.NONE,)),
 
-    "lettery_math": (lettery_math_table, write_i, (Language.NONE,))
+    "lettery_math": (lettery_math_table, write_i, (Language.NONE,)),
+    "roman_dashes_math": (roman_dashes_math_table, write_i, (Language.NONE,))
 }
 
 
