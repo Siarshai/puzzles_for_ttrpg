@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from common_args_parse import prepare_argsparse, prepare_result_dir, prepare_data
+from stenography.in_words_overlap import hide_in_words_overlap
 from stenography.spiral_hide import spiral_hide
 from stenography.diagnoal_fill_to_square import diagonal_fill_to_square_last, diagonal_fill_to_square_first
 from stenography.hide_image_in_words import hide_image
@@ -18,6 +19,7 @@ registered_stenography_input = {
     "letters_before_sequence": (hide_letters_before_sequence, "SECRET_WORD,MARKING_SEQUENCE"),
     "nth_letter": (hide_in_nth_letters, "SECRET_WORD,N"),
     "between_words": (hide_in_between_words, "SECRET_WORD,MAXCOUNT"),
+    "words_overlap": (hide_in_words_overlap, "SECRET_WORD,COUNT"),
     "hide_image": (hide_image, "IMAGE_LINE;IMAGE_LINE;IMAGE_LINE,..."),
     "diagonal_fill_last": (diagonal_fill_to_square_last, "SECRET_WORD"),
     "diagonal_fill_first": (diagonal_fill_to_square_first, "SECRET_WORD"),
